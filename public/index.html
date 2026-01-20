@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortURL - HanzOfc</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&family=Source+Code+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000;
+            --secondary: #fff;
+            --accent: #667eea;
+            --gray-light: #f5f5f5;
+            --gray: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--secondary);
+            color: var(--primary);
+            letter-spacing: -0.01em;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .code-font {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Courier New', monospace;
+            font-variant-ligatures: contextual;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            background-image: 
+                linear-gradient(#00000008 1px, transparent 1px), 
+                linear-gradient(90deg, #00000008 1px, transparent 1px);
+            background-size: 35px 35px;
+            mask-image: radial-gradient(circle at center, black 60%, transparent 95%);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: var(--secondary);
+            border-bottom: 2px solid var(--primary);
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-weight: 900;
+            font-size: 1.25rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            border: 2px solid var(--primary);
+            background: var(--secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 6px 6px 0px var(--primary);
+            transform: translate(-2px, -2px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* URL Input Section */
+        .input-section {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-field {
+            flex: 1;
+            border: 1.5px solid var(--primary);
+            background: var(--secondary);
+            transition: all 0.2s;
+            border-radius: 0.375rem;
+            padding: 0.875rem 1.25rem;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            box-shadow: 3px 3px 0px var(--primary);
+        }
+
+        .btn-primary {
+            border: 2px solid var(--primary);
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: 700;
+            transition: all 0.2s;
+            padding: 1rem 2rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            box-shadow: 4px 4px 0px var(--primary);
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-badge {
+            background: var(--success);
+            color: var(--secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .url-display {
+            background: var(--gray-light);
+            border: 1.5px solid var(--primary);
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .url-display .label {
+            font-size: 0.875rem;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .url-display .value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            word-break: break-all;
+            margin-bottom: 0.75rem;
+        }
+
+        .url-display .short-url {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .url-display .short-url:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            border: 1.5px solid var(--primary);
+            background: var(--secondary);
+            color: var(--primary);
+            transition: all 0.2s;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        /* URL List Section */
+        .url-list-section {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .url-table-container {
+            border: 1.5px solid var(--primary);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: var(--secondary);
+            margin-top: 1rem;
+        }
+
+        .url-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .url-table thead {
+            background: var(--primary);
+        }
+
+        .url-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .url-table tbody tr {
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .url-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .url-table tbody tr:hover {
+            background: var(--gray-light);
+        }
+
+        .url-table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .short-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            background: var(--gray-light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+        }
+
+        .original-url {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-btn-small {
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn-small:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .url-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: var(--secondary);
+            padding: 1rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 50;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            right: 1.25rem;
+            top: 1.25rem;
+            z-index: 40;
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>SHORTURL</h1>
+            <div class="subtitle">Modern URL Shortener</div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalUrls">0</div>
+                <div class="stat-label">Total URLs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeUrls">0</div>
+                <div class="stat-label">Active Now</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="domainStatus">Live</div>
+                <div class="stat-label">Status</div>
+            </div>
+        </div>
+
+        <section class="input-section">
+            <h2 class="section-title">
+                <i class="fas fa-link"></i>
+                Buat Short URL Baru
+            </h2>
+            
+            <div class="input-group">
+                <input type="url" 
+                       id="urlInput" 
+                       class="input-field" 
+                       placeholder="https://example.com/url-panjang-sekali-yang-mau-dipendekin"
+                       autocomplete="off">
+                <button class="btn-primary" onclick="shortenUrl()" id="shortenBtn">
+                    <i class="fas fa-scissors"></i>
+                    Shorten URL
+                </button>
+            </div>
+            
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle"></i>
+                Masukkan URL lengkap dengan http:// atau https://
+            </div>
+        </section>
+
+        <section class="result-section" id="resultSection">
+            <div class="result-header">
+                <h2 class="section-title">
+                    <i class="fas fa-check-circle"></i>
+                    URL Berhasil Dipendekin!
+                </h2>
+                <span class="success-badge">
+                    <i class="fas fa-bolt"></i>
+                    READY TO SHARE
+                </span>
+            </div>
+
+            <div class="url-display">
+                <div class="label">Short URL</div>
+                <div class="value">
+                    <a href="#" id="shortUrlDisplay" class="short-url" target="_blank"></a>
+                </div>
+                
+                <div class="label">Original URL</div>
+                <div class="value" id="originalUrlDisplay"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-secondary" onclick="copyToClipboard()">
+                    <i class="fas fa-copy"></i>
+                    Copy Short URL
+                </button>
+                <button class="btn-secondary" onclick="shareUrl()">
+                    <i class="fas fa-share-alt"></i>
+                    Share
+                </button>
+                <button class="btn-secondary" onclick="testRedirect()">
+                    <i class="fas fa-external-link-alt"></i>
+                    Test Redirect
+                </button>
+                <button class="btn-secondary" onclick="createAnother()">
+                    <i class="fas fa-plus"></i>
+                    Buat Lainnya
+                </button>
+            </div>
+        </section>
+
+        <section class="url-list-section">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i>
+                URL Terbaru
+            </h2>
+            
+            <div class="url-table-container">
+                <table class="url-table" id="urlTable">
+                    <thead>
+                        <tr>
+                            <th>Short Code</th>
+                            <th>Original URL</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="urlTableBody">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>Belum ada URL yang dibuat</h3>
+                <p>Mulai dengan membuat short URL pertama Anda!</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // DOM Elements
+        const urlInput = document.getElementById('urlInput');
+        const resultSection = document.getElementById('resultSection');
+        const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+        const originalUrlDisplay = document.getElementById('originalUrlDisplay');
+        const urlTableBody = document.getElementById('urlTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const toast = document.getElementById('toast');
+        const themeToggle = document.getElementById('themeToggle');
+        const totalUrlsElement = document.getElementById('totalUrls');
+        const activeUrlsElement = document.getElementById('activeUrls');
+        const shortenBtn = document.getElementById('shortenBtn');
+
+        // State
+        let currentShortUrl = '';
+        let isDarkMode = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUrls();
+            updateStats();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Enter key support
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    shortenUrl();
+                }
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // Shorten URL
+        async function shortenUrl() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showToast('Masukkan URL terlebih dahulu', 'error');
+                return;
+            }
+
+            // Validate URL
+            let finalUrl = url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                finalUrl = 'https://' + url;
+            }
+
+    
